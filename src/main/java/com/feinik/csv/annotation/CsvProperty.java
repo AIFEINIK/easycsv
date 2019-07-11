@@ -1,4 +1,4 @@
-package com.feinik.annotation;
+package com.feinik.csv.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -7,10 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Use in model object field
+ *
  * @author Feinik
- * @Discription ${DISCRIPTION}
- * @Data 2019/7/10
- * @Version 1.0.0
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

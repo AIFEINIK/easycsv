@@ -1,13 +1,12 @@
-package com.feinik.context;
+package com.feinik.csv.context;
 
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
 /**
+ * Use init handle CsvWriter or CsvReader
+ *
  * @author Feinik
- * @discription
- * @date 2019/7/10
- * @since 1.0.0
  */
 public interface CsvContext {
 

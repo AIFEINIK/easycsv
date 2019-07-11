@@ -1,10 +1,9 @@
-package com.feinik.metadata;
+package com.feinik.csv.metadata;
 
 /**
+ *
+ *
  * @author Feinik
- * @discription
- * @date 2019/7/10
- * @since 1.0.0
  */
 public class CsvColumnProperty implements Comparable<CsvColumnProperty> {
 

@@ -1,8 +1,8 @@
-package com.feinik;
+package com.feinik.csv;
 
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
-import com.feinik.constant.CsvDelimiter;
+import com.feinik.csv.constant.CsvDelimiter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,10 +10,9 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 
 /**
+ * Reader and writer csv factory class
+ *
  * @author Feinik
- * @discription Reader and writer csv factory class
- * @date 2019/7/8
- * @since 1.0.0
  */
 public class CsvFactory {
 

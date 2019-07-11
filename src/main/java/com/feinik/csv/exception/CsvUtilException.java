@@ -1,10 +1,9 @@
-package com.feinik.exception;
+package com.feinik.csv.exception;
 
 /**
+ *
+ *
  * @author Feinik
- * @discription
- * @date 2019/7/10
- * @since 1.0.0
  */
 public class CsvUtilException extends RuntimeException {
 

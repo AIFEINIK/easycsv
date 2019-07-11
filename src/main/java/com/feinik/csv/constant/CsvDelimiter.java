@@ -1,10 +1,9 @@
-package com.feinik.constant;
+package com.feinik.csv.constant;
 
 /**
+ * Field delimiter
+ *
  * @author Feinik
- * @discription
- * @date 2019/7/10
- * @since 1.0.0
  */
 public class CsvDelimiter {
 

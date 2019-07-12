@@ -4,13 +4,11 @@ package com.feinik.csv;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 import com.feinik.csv.analysis.CsvDataBuilder;
-import com.feinik.csv.constant.CsvDelimiter;
 import com.feinik.csv.context.CsvContext;
 import com.feinik.csv.event.CsvListener;
 import com.feinik.csv.exception.CsvUtilException;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
@@ -26,92 +24,38 @@ public class CsvUtil {
 
     /**
      *  Write the template object to CSV
-     * @param filePath write file path
+     * @param writer get by CsvFactory
      * @param writeData write data
-     * @param delimiter field separator
-     * @param charset
+     * @param containHead whether to write to the head line
      * @param <T>
      * @return
      */
-    public static <T> boolean write(String filePath, List<T> writeData, char delimiter, Charset charset) {
-        if (writeData == null) {
-            throw new IllegalArgumentException("Parameter writeData can not be null");
-        }
-
-        return write(filePath, writeData, delimiter, charset, null);
-
-    }
-
-    /**
-     * Write the template object to CSV, default delimiter is ','
-     * @param filePath write file path
-     * @param writeData write data
-     * @param charset
-     * @param <T>
-     * @return
-     */
-    public static <T> boolean write(String filePath, List<T> writeData, Charset charset) {
-        if (writeData == null) {
-            throw new IllegalArgumentException("Parameter writeData can not be null");
-        }
-
-        return write(filePath, writeData, CsvDelimiter.symbol, charset, null);
-
+    public static <T> boolean write(CsvWriter writer, List<T> writeData, boolean containHead) {
+        return write(writer, writeData, containHead, null);
     }
 
     /**
      *  Write the template object to CSV
-     * @param filePath write file path
+     * @param writer get by CsvFactory
      * @param writeData write data
-     * @param delimiter field separator
-     * @param charset
-     * @param context init CsvWriter
-     * @param <T>
-     */
-    public static <T> boolean write(String filePath, List<T> writeData, char delimiter,
-                                 Charset charset, CsvContext context) {
-        if (writeData == null) {
-            throw new IllegalArgumentException("Parameter writeData can not be null");
-        }
-
-        return writeWithContext(filePath, writeData, delimiter, charset, context);
-    }
-
-    /**
-     * Write the template object to OutputStream
-     * @param os Write stream
-     * @param writeData write data
-     * @param delimiter field separator
-     * @param charset
-     * @param <T>
-     */
-    public static <T> boolean write(OutputStream os, List<T> writeData, char delimiter,
-                                 Charset charset) {
-        if (writeData == null) {
-            throw new IllegalArgumentException("Parameter writeData can not be null");
-        }
-
-        final CsvWriter writer = CsvFactory.getWriter(os, delimiter, charset);
-        return write(writeData, null, writer);
-    }
-
-    /**
-     * Write the template object to OutputStream
-     * @param os Write stream
-     * @param writeData write data
-     * @param delimiter field separator
-     * @param charset
+     * @param containHead whether to write to the head line
      * @param context can init handle CsvWriter or CsvReader
      * @param <T>
+     * @return
      */
-    public static <T> boolean write(OutputStream os, List<T> writeData, char delimiter,
-                                 Charset charset, CsvContext context) {
-        if (writeData == null) {
-            throw new IllegalArgumentException("Parameter writeData can not be null");
-        }
+    public static <T> boolean write(CsvWriter writer, List<T> writeData,
+                                    boolean containHead, CsvContext context) {
+        CsvDataBuilder builder = new CsvDataBuilder(context);
+        boolean result = false;
+        try {
+            builder.write(writer, containHead, writeData);
+            result = true;
+        } catch (Exception e) {
+            throw new CsvUtilException(e);
 
-        final CsvWriter writer = CsvFactory.getWriter(os, delimiter, charset);
-        return write(writeData, context, writer);
+        } finally {
+            return result;
+        }
     }
 
     /**
@@ -359,44 +303,6 @@ public class CsvUtil {
 
         final CsvReader reader = CsvFactory.getReader(filePath, charset);
         readOnListenerAndWithContext(reader, cls, DEFAULT_SKIP_ROW, context, listener);
-    }
-
-    /**
-     *
-     * @param filePath
-     * @param writeData
-     * @param delimiter
-     * @param charset
-     * @param context
-     * @param <T>
-     */
-    private static <T> boolean writeWithContext(String filePath, List<T> writeData, char delimiter,
-                                                Charset charset, CsvContext context) {
-        if (writeData == null) {
-            throw new IllegalArgumentException("Parameter writeData can not be null");
-        }
-
-        final CsvWriter writer = CsvFactory.getWriter(filePath, delimiter, charset);
-        return write(writeData, context, writer);
-
-    }
-
-    private static <T> boolean write(List<T> writeData, CsvContext context, CsvWriter writer) {
-        CsvDataBuilder builder = new CsvDataBuilder(context);
-        boolean result = false;
-        try {
-            builder.write(writer, writeData);
-            result = true;
-        } catch (Exception e) {
-            result = false;
-            throw new CsvUtilException(e);
-
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
-            return result;
-        }
     }
 
     private static <T> void readOnListenerAndWithContext(CsvReader reader, Class<T> cls,

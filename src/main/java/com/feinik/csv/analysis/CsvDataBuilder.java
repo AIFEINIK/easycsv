@@ -158,7 +158,7 @@ public class CsvDataBuilder {
      * @return
      * @throws Exception
      */
-    public <T> CsvWriter write(CsvWriter writer, List<T> writeData) throws Exception {
+    public <T> CsvWriter write(CsvWriter writer, boolean containHead, List<T> writeData) throws Exception {
         if (context != null) {
             context.initWriter(writer);
 
@@ -169,22 +169,29 @@ public class CsvDataBuilder {
             if (data != null) {
                 List<Field> fields = getAllFields(data.getClass());
 
-                List<CsvColumnProperty> columnProperties = getCsvColumnProperties(data, fields);
-                Collections.sort(columnProperties);
-                allCol.add(columnProperties);
+                allCol.add(getCsvColumnProperties(data, fields));
             }
 
         }
 
-        List<String> head = new ArrayList<>();
-        List<List<String>> contents = new ArrayList<>();
-        for (int i = 0; i < allCol.size(); i++) {
-            final List<CsvColumnProperty> csvColumnProperties = allCol.get(i);
-            if (i == 0) {
-                head = csvColumnProperties.stream().map(CsvColumnProperty::getHead).collect(Collectors.toList());
-            }
+        List<List<String>> contents = getContents(allCol);
 
-            final List<String> content = csvColumnProperties.stream().map(p -> {
+        if (containHead) {
+            //write head line
+            writer.writeRecord(getHeadArray(allCol.get(0)));
+        }
+
+        for (List<String> content : contents) {
+            writer.writeRecord(content.toArray(new String[content.size()]));
+        }
+
+        return writer;
+    }
+
+    private List<List<String>> getContents(List<List<CsvColumnProperty>> allCol) {
+        List<List<String>> contents = new ArrayList<>();
+        for (List<CsvColumnProperty> columnProperties : allCol) {
+            final List<String> content = columnProperties.stream().map(p -> {
                 final String value = p.getContent();
                 final String format = p.getFormat();
                 final String formatValue = MessageFormat.format(format == null ? "{0}" : format, value);
@@ -193,14 +200,12 @@ public class CsvDataBuilder {
 
             contents.add(content);
         }
+        return contents;
+    }
 
-        final String[] headArr = head.toArray(new String[head.size()]);
-        writer.writeRecord(headArr);
-        for (List<String> content : contents) {
-            writer.writeRecord(content.toArray(new String[content.size()]));
-        }
-
-        return writer;
+    private String[] getHeadArray(List<CsvColumnProperty> columnProperties) {
+        final List<String> headers = columnProperties.stream().map(CsvColumnProperty::getHead).collect(Collectors.toList());
+        return headers.toArray(new String[headers.size()]);
     }
 
     /**
@@ -235,6 +240,7 @@ public class CsvDataBuilder {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+        Collections.sort(columnProperties);
         return columnProperties;
     }
 

@@ -31,10 +31,19 @@ public class CsvTest {
         CampaignModel m3 = new CampaignModel("2019-01-03", 13000002L, "campaign3", 14.11d, 100L, 0.14d);
         ArrayList<CampaignModel> campaignModels = Lists.newArrayList(m1, m2, m3);
 
-        //CsvUtil.write(writeFilePath, campaignModels, Charset.forName("GBK"));
+        CsvWriter writer = null;
+        try {
+            writer = CsvFactory.getWriter(writeFilePath, Charset.forName("GBK"));
+            CsvUtil.write(writer, campaignModels, true, null);
+            CsvUtil.write(writer, campaignModels, false, null);
+        } catch (Exception e) {
+            e.printStackTrace();
 
-        //写入csv数据前，还可通过CampaignDataContext来初始化CsvWriter相关参数
-        CsvUtil.write(writeFilePath, campaignModels, ',', Charset.forName("GBK"), new CampaignDataContext());
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
     }
 
     @Test
@@ -54,11 +63,12 @@ public class CsvTest {
 
         @Override
         public void initWriter(CsvWriter writer) {
-
+            writer.setDelimiter('#');
         }
 
         @Override
         public void initReader(CsvReader reader) {
+            //通过这里设置headers可灵活设置具体csv文件解析对应的head顺序，可通过将headers参数配置化（如：通过配置中心读取）
             reader.setHeaders(new String[]{"日期", "广告系列 ID", "广告系列", "费用", "点击次数", "点击率"});
         }
     }

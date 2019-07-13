@@ -34,7 +34,10 @@ public class CsvTest {
         CsvWriter writer = null;
         try {
             writer = CsvFactory.getWriter(writeFilePath, Charset.forName("GBK"));
+            //首次写入数据包含写入head行
             CsvUtil.write(writer, campaignModels, true, null);
+
+            //下一批数据写入不在写入head行
             CsvUtil.write(writer, campaignModels, false, null);
         } catch (Exception e) {
             e.printStackTrace();
